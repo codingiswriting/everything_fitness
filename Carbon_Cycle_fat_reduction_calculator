@@ -1,0 +1,137 @@
+# Carbon_Cycle_fat_reduction_calculator(碳循环减脂)
+
+
+# this program is used to automatically work out
+# input: weight (lbs), exercise_level
+# 1) personal BMR
+# 2) Calories that one needs to keep their current weight
+# 3) Calories that one needs to lose fat but keep their muscles
+# 4) Nutrition intake based on middle_carb_intake_day, high_carb_intake_day and low_carb_intake_day
+
+def bmr_calculator(wei,age,gen,hei):
+    if gen == 1: #male
+        return 66.47 + (13.7 * wei) + (5 * hei) - (6.8 * age)
+    else:
+        return 655.1 + (9.6 * wei) + (1.8 * hei) - (4.7 * age)
+        
+
+    
+def print_func():
+    # input weight in the unit of cm
+    while True:
+        weight = input("Please input your weight in the unit of kgs: ")
+        try:
+            weight = float(weight)
+            if weight <= 0:
+                continue
+            else:
+                break
+        except:
+            print("Invalid input.")
+            continue
+        
+    # input exercise_level
+    while True:
+        exercise_level_index = input("Please input your exercise_level using index 1-6, notice normal people are 1, 2 or 3, professional trainer is 4 or more: ")
+        try:
+            exercise_level_index = int(exercise_level_index)
+            if exercise_level_index > 6 or exercise_level_index < 1:
+                continue
+            else:
+                break
+        except:
+            print("Invalid input.")
+
+    exercise_level_dic = {1:1.0,2:1.2,3:1.4,4:1.6, 5:1.8, 6:2.0}
+    exercise_level = exercise_level_dic[exercise_level_index]
+
+    # input gender
+    while True:
+        gender = input("If you are a male, input 1, female, input 0: ")
+        try:
+            gender = int(gender)
+            if gender not in {0,1}:
+                continue
+            else:
+                break
+        except:
+            print("Invalid input.")
+                             
+    # input age
+    while True:
+        age = input("Please input your age: ")
+        try:
+            age = int(age)
+            if age <= 0 or age > 150:
+                continue
+            else:
+                break
+        except:
+            print("Invalid input.")
+        
+    # input height
+    while True:
+        height = input("Please input your height in the unit of cm: ")
+        try:
+            height = float(height)
+            if height <= 0 or height > 250:
+                continue
+            else:
+                break
+        except:
+            print("Invalid input.")
+            continue
+
+    
+    bmr = bmr_calculator(weight,age,gender,height)
+    print("Your bmr is",bmr)
+    keep_weight_calories = bmr * exercise_level
+    modified_weight_calories = keep_weight_calories * 0.85 #notice I deduced the calories by 15% for everyone
+    print(f'You need to eat {keep_weight_calories:.1f} to keep you current weight.')
+    #print(f'In order to deduce bodyfat and build muscles,from now on you need to intake {modified_weight_calories:.1f} calories per day.')
+    #print()
+    middle_carb = 1.25 * 2.2 * weight
+    body_fat = weight / (height**2/10000) * 1.2 + 0.23 * age - 5.4 - 10.8 * gender
+    #print(f'Your body fat rate is {body_fat:.2f}%.')
+    middle_protein_max = (weight*2.2 - weight * 2.2 * body_fat/100) * 1.2
+    middle_protein_min = (weight*2.2 - weight * 2.2 * body_fat/100)
+    middle_protein_mid = (weight*2.2 - weight * 2.2 * body_fat/100) * 1.1
+    middle_fat = (modified_weight_calories - (middle_protein_mid + middle_carb) * 4)/9
+    
+    high_carb = 1.75 * middle_carb
+    low_carb = 0.25 * middle_carb
+
+    high_fat = middle_fat * 0.5 #high_carb_day_fat
+    low_fat = 1.5 * middle_fat #low_carb_day_fat
+    
+    protein_index_dic = {0:middle_protein_min,1:middle_protein_mid,2:middle_protein_max}
+    while True:
+        protein = input("If you are muscle and don't have many fat, type 2, if you don't have muscle and a bit chubby, type 0. If you are in the middle, type 1: ")
+        try:
+            protein = int(protein)
+            if protein not in {0,1,2}:
+                continue
+            else:
+                protein = protein_index_dic[protein]
+                break
+        except:
+            continue
+    print(f'Your body fat is {body_fat:.2f}%')
+    print(f'The modified calories are {modified_weight_calories:.2f}')
+    print(f'The high_carb_day is {high_carb:.2f}g carbon, {protein:.2f}g protein, {high_fat:.2f}g fat.')
+    print(f'The middle_carb_day is {middle_carb:.2f}g carbon, {protein:.2f}g protein, {middle_fat:.2f}g fat.')
+    print(f'The low_carb_day is {low_carb:.2f}g carbon, {protein:.2f}g protein, {low_fat:.2f}g fat.')
+    
+    print(f'你的体脂是 {body_fat:.2f}%')
+    print(f'减脂期间摄入的卡路里量是 {modified_weight_calories:.2f}卡')
+    print(f'高碳日应摄入 {high_carb:.2f}g 碳水, {protein:.2f}g 的蛋白质以及 {high_fat:.2f}g 的脂肪.')
+    print(f'中碳日应摄入 {middle_carb:.2f}g 的碳水, {protein:.2f}g 的蛋白质以及{middle_fat:.2f}g 的脂肪.')
+    print(f'低碳日应摄入 {low_carb:.2f}g 的碳水, {protein:.2f}g 的蛋白质以及 {low_fat:.2f}g 的脂肪.')
+    
+
+print_func()
+
+
+
+
+
